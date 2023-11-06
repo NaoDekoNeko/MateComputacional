@@ -1,50 +1,76 @@
 import numpy as np
 import sympy as sp
 
-def Min_G(f, G0, G1, G2, x_min, y_min, z_min):
-    thetha = sp.symbols("thetha")
-    g = f.subs([(x, x_min + thetha * G0), (y, y_min + thetha * G1)])
-    if G2 is not None:
-        g = g.subs(z, z_min + thetha * G2)
-    df = sp.diff(g, thetha)
-    thetha_solutions = sp.solve(df, thetha)
-    if thetha_solutions:
-        return thetha_solutions[0]
+# Función para encontrar el tamaño de paso óptimo para el método de descenso de gradiente
+def Min_G(f,G0,G1,G2,x_min,y_min, z_min):
+    # Definir la variable de tamaño de paso
+    thetha = sp.var("thetha")
+    # Sustituir el punto actual y el tamaño de paso en la función
+    g = f.subs([ (x,x_min + thetha*G0), (y,y_min + thetha*G1), (z,z_min + thetha*G2)])
+    print(f"g(thetha) = {g.evalf(6)}")
+    # Calcular la derivada de la función con respecto al tamaño de paso
+    dg=sp.diff(g,thetha)
+    print(f"dg(thetha) = {dg.evalf(6)}")
+    # Resolver la ecuación donde la derivada es igual a cero para encontrar el tamaño de paso óptimo
+    thetha = sp.solve(sp.Eq(dg, 0))
+    if thetha:
+        return thetha[0]
     else:
         return 0
 
-def Metodo_gradiente(f, x0, y0, z0=None, max_n_iter=1000, epsilon=1e-6):
-    x, y, z = sp.symbols('x y z')
-    G = sp.Matrix([sp.diff(f, x), sp.diff(f, y), sp.diff(f, z) if z0 is not None else 0])
-    x_min = x0
-    y_min = y0
-    z_min = z0
-    i = 0
-    x_current = 0
-    y_current = 0
-    z_current = 0 if z0 is not None else None
+# Función para realizar el método de descenso de gradiente
+def Metodo_gradiente(f,x0,y0,z0,max_n_iter=1000,TOL=1e-6):
+    # Calcular el gradiente de la función
+    fx = sp.diff(f,x)
+    fy = sp.diff(f,y)
+    fz = sp.diff(f,z)
+    G = sp.Matrix([fx,fy,fz])
 
-    while i < max_n_iter and (np.abs(x_current - x_min) >= epsilon or np.abs(y_current - y_min) >= epsilon or (z0 is not None and np.abs(z_current - z_min) >= epsilon)):
-        x_current = x_min
-        y_current = y_min
-        z_current = z_min
+    print(f"Gradiente: ({fx},{fy},{fz})")
 
-        G_val = G.subs({x: x_min, y: y_min, z: z_min if z_min is not None else 0})
-        thetha = Min_G(f, G_val[0], G_val[1], G_val[2] if z0 is not None else None, x_min, y_min, z_min)
+    # Inicializar el punto actual
+    x_min = sp.Matrix([x0])[0]
+    y_min = sp.Matrix([y0])[0]
+    z_min = sp.Matrix([z0])[0]
+    x_actual = 0.1
+    y_actual = 0.1
+    z_actual = 0.1
+    i=0
 
-        x_min = x_min - thetha * G_val[0]
-        y_min = y_min - thetha * G_val[1]
-        if z_min is not None:
-            z_min = z_min - thetha * G_val[2]
+    # Iterar hasta que el cambio en el valor de la función sea menor que TOL
+    while(np.abs(x_actual-x_min) > TOL and np.abs(y_actual-y_min) > TOL and np.abs(z_actual-z_min) > TOL):
+        x_actual = x_min
+        y_actual = y_min
+        z_actual = z_min
 
-        print(f"Iter : {i}")
-        print(f"x: {x_min:.6f} - y: {y_min:.6f}")
-        if z_min is not None:
-            print(f"z: {z_min:.6f}")
+        G0 = G.subs([(x,x_min),(y,y_min), (z,z_min)])[0]
+        G1 = G.subs([(x,x_min),(y,y_min), (z,z_min)])[1]
+        G2 = G.subs([(x,x_min),(y,y_min), (z,z_min)])[2]
 
-        i += 1
+        i+=1
+        print(f"Iteracion : {i}")
+        print(f"min g(theta) = F(({x_min:.6f},{y_min:.6f},{z_min:.6f}) + theta*gradiente F({G0:.6f},{G1:.6f},{G2:.6f})")   
+        print(f"Gradiente F({x_actual:.6f},{y_actual:.6f},{z_actual:.6f}) = ({G0:.6f},{G1:.6f},{G2:.6f})")
+        thetha = Min_G(f,G0,G1,G2,x_min,y_min, z_min)
+        print(f"thetha = {thetha:.6f}")
 
-    if i == max_n_iter:
-        print("No converge")
+        x_min = x_min + thetha*G0
+        y_min = y_min + thetha*G1
+        z_min = z_min + thetha*G2
+        
+        print(f"x: {x_min:.6f} - y: {y_min:.6f} - z: {z_min:.6f}")
+        print(f"F({x_min:.6f},{y_min:.6f},{z_min:.6f}) = {f.subs([(x,x_min),(y,y_min),(z,z_min)]):.6f}")
 
-    return x_min, y_min, z_min if z_min is not None else None
+        if (i == max_n_iter):
+            print("No converge")
+            return
+
+    
+
+#Definir las variables
+x,y,z = sp.var("x y z")
+
+#Definir la funcion a minimizar
+f =  x**2 + y**2 - z**2 + 2*x*y - 2*x*z + 2*y*z
+
+Metodo_gradiente(f,10,10,10)
