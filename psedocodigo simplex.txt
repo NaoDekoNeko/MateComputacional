@@ -1,0 +1,33 @@
+# Paso 1: Expresar el problema en su forma estándar
+# (Este paso depende del problema específico y se realiza antes de ejecutar el algoritmo)
+
+# Paso 2: Construir la tabla con los coeficientes del sistema
+# (Este paso también depende del problema específico)
+
+# Iniciar el algoritmo
+while True:
+    # Paso 3: Seleccionar la columna q
+    q = seleccionar_columna()
+
+    # Paso 4: Calcular las razones y seleccionar la fila i
+    i = seleccionar_fila(q)
+
+    # Si no se puede seleccionar una fila, el problema no está acotado
+    if i is None:
+        print("El problema no está acotado")
+        break
+
+    # Paso 5: Reemplazar xq por si
+    reemplazar_variable_basica(i, q)
+
+    # Paso 6: Seleccionar el elemento pivote
+    pivote = seleccionar_pivote(i, q)
+
+    # Paso 7: Realizar operaciones elementales para que el pivote sea uno y los demás elementos de la columna q sean ceros
+    realizar_operaciones_elementales(pivote, i, q)
+
+    # Paso 8: Comprobar si todos los coeficientes de la fila z son positivos o ceros
+    if comprobar_coeficientes():
+        break
+
+# Al final del algoritmo, la solución óptima está dada por los valores de las variables básicas
