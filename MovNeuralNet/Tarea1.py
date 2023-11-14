@@ -124,7 +124,7 @@ while (j < maxIter) and (Emc > minError):
         axis[i, j] = W[i]
 
     # Cálculo del error medio cuadrático
-    sum_squared_errors = np.sum(Error ** 2)
+    sum_squared_errors = np.sum(Error)
     num_samples = len(X)
     Emc = np.sqrt(sum_squared_errors / (2*num_samples))
     errors.append(Emc)
