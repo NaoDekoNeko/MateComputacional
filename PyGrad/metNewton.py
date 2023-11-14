@@ -55,8 +55,8 @@ if __name__ == "__main__":
     #Definir las variables
     x,y = sp.var("x y")
 
-    f = x**2 - x + y**2 + 10
+    #f = x**2 - x + y**2 + 10
 
-    #f = sp.sin(x*y) - sp.cos(x-y)
+    f = sp.sin(x*y) - sp.cos(x-y)
 
-    MetodoNewton(f,1,1)
+    MetodoNewton(f,1/2,1/2)
