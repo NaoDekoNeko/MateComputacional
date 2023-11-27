@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pickle
+import h5py
 
 # Tasa de aprendizaje
 n = 0.65
 
 # Número máximo de iteraciones y error mínimo
-maxIter = 3000
+maxIter = 2000
 minError = 0.1
 
 # Función de activación sigmoide
@@ -265,26 +265,16 @@ def train():
         # Impresión del progreso
         print("Iteracion: ", j, " Error: ", Emc)
 
-    # Guardar valores iniciales
-    initial_values = {
-        'W': W,
-        'U': U,
-        'maxIter': maxIter,
-        'minError': minError,
-        'n': n,
-        # Otros valores que desees guardar
-    }
-
-    with open('initial_values.pkl', 'wb') as file:
-        pickle.dump(initial_values, file)
-
+    with h5py.File('initial_values.h5', 'w') as file:
+        file.create_dataset('W', data=W)
+        file.create_dataset('U', data=U)
     # Impresión de los pesos  y umbrales finales
     print("Pesos: ", W)
     print("Umbrales: ", U)
 
     return W,neta,fneta,T,X,U,errors,axis,axisX
 
-def learningComp(W, neta, fneta, T, X, U):
+def predict(W, neta, fneta, T, X, U):
     # Mapeo o comprobación del aprendizaje
     print("Mapeo o comprobación del aprendizaje")
 
@@ -336,13 +326,10 @@ def plotWeights(axis, axisX):
     plt.show()
 
 def test(prueba):
-    # Cargar valores iniciales
-    with open('initial_values.pkl', 'rb') as file:
-        initial_values = pickle.load(file)
-
-    # Obtener los pesos finales
-    W = initial_values['W']
-    U = initial_values['U']
+    # Cargar valores iniciales H5
+    with h5py.File('initial_values.h5', 'r') as file:
+        W = np.array(file['W'])
+        U = np.array(file['U'])
 
     print("Pesos: ", W)
     print("Umbrales: ", U)
@@ -368,7 +355,7 @@ def test(prueba):
 
 def beginTrain():
     W,neta,fneta,T,X,U,errors,axis,axisX = train()
-    learningComp(W, neta, fneta, T, X, U)
+    predict(W, neta, fneta, T, X, U)
     plotErrors(errors)
     plotWeights(axis, axisX)
 
@@ -378,6 +365,6 @@ def beginTest():
     test(prueba)
 
 if __name__ == "__main__":
-    #beginTrain()
+    beginTrain()
     
     beginTest()
