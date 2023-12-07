@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\begin{document}
+
+\textbf{Parámetros:}
+\begin{align*}
+&N: \text{Número de ubicaciones (incluyendo el depósito).} \\
+&V: \text{Número de vehículos disponibles.} \\
+&Q: \text{Capacidad máxima de cada vehículo.} \\
+&d_{ij}: \text{Distancia (o costo) de viajar directamente de la ubicación } i \text{ a la ubicación } j. \\
+&q_i: \text{Demanda de la ubicación } i. \\
+&c_{ij}: \text{Costo de transportar una unidad de demanda desde la ubicación } i \text{ a la ubicación } j.
+\end{align*}
+
+\textbf{Variables de decisión:}
+\begin{align*}
+&x_{ij}: \text{Variable binaria que indica si se viaja directamente de la ubicación } i \text{ a la ubicación } j \text{ (1 si es así, 0 en caso contrario).} \\
+&u_i: \text{Variable continua que representa la cantidad acumulativa de demanda atendida en la ubicación } i.
+\end{align*}
+
+\textbf{Función Objetivo:}
+\[\min \sum_{i=1}^{N}\sum_{j=1, j\neq i}^{N} c_{ij} \cdot x_{ij}\]
+
+\textbf{Restricciones:}
+\begin{align*}
+&\text{1. Cada ubicación debe ser visitada exactamente una vez:} \\
+&\sum_{i=1}^{N} x_{ij} = 1, \quad \forall j \neq 1 \\
+&\sum_{j=1}^{N} x_{ij} = 1, \quad \forall i \neq 1 \\
+&\text{2. Cada vehículo debe salir y regresar al depósito:} \\
+&\sum_{i=1}^{N} x_{i1} = V \\
+&\sum_{j=1}^{N} x_{1j} = V \\
+&\text{3. Garantizar que no hay subciclos:} \\
+&u_i - u_j + Q \cdot x_{ij} \leq Q - q_j, \quad \forall i \neq 1, j \neq 1, i \neq j \\
+&\text{4. Capacidad de los vehículos:} \\
+&\sum_{i=1}^{N} q_i \cdot x_{ij} \leq Q, \quad \forall j \neq 1 \\
+&\text{5. Variables binarias:} \\
+&x_{ij} \in \{0, 1\}, \quad \forall i, j
+\end{align*}
+
+\end{document}
+
