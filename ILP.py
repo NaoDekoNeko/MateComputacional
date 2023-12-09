@@ -277,24 +277,23 @@ if "__main__" == __name__:
     """
     # Problema 2
     
-    cT = np.array([2, 3])
+    cT = np.array([2, 4, 5 ,2])
+    
     cT *= -1  # para maximizar
     Aub = np.array(
         [
-            [4, 12],
-            [10, 4],
+            [8,12,10,6],
         ],
         dtype=np.float64,
     )
     bub = np.array(
-        [33, 35],
+        [25],
         dtype=np.float64,
     )
     Aeq = None
     beq = None
     bounds = [
-        (0, 20),
-        (0, 20),
+        (0, 1),
     ]
 
     
@@ -305,7 +304,7 @@ if "__main__" == __name__:
     result = branch_and_bound(ip)
 
     print(f"check result {result.x}")
-    print(f"check result {-1*result.fun}")
+    print(f"check result {result.fun}")
 
 
     print("\n------------------BFS------------------\n")
